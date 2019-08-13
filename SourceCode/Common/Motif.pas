@@ -13,6 +13,7 @@ type
     function add(const aPattern: string; const aReturn: string = ''): IMotif;
     function find (const aPattern: string; const aExact: Boolean = False): string;
     procedure remove (const aPattern: string);
+    procedure clear;
 {$ENDREGION}
     function prepareTag(const aPattern: string): string;
     function getPatternItemResponse(const index: integer): string;
@@ -30,6 +31,11 @@ type
   TPatternItem = class
     Response: string;
   end;
+
+procedure TMotif.clear;
+begin
+  fList.Clear;
+end;
 
 constructor TMotif.Create;
 begin

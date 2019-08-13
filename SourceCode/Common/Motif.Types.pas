@@ -8,6 +8,7 @@ type
     function add (const aPattern: string; const aReturn: string = ''):IMotif;
     procedure remove (const aPattern: string);
     function find (const aPattern: string; const aExact: Boolean = False): string;
+    procedure clear;
   end;
 
 implementation
