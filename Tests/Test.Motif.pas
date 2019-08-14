@@ -20,8 +20,11 @@ type
 
     [Test]
     procedure basic;
+
     [Test]
     procedure delete;
+    [Test]
+    procedure deleteIntermediate;
 
     [Test]
     [TestCase ('', '-0.0-0.0','-')]
@@ -43,6 +46,8 @@ type
 
     [Test]
     procedure glob;
+    [Test]
+    procedure globBack;
 
     [Test]
     procedure toUpper;
@@ -83,6 +88,10 @@ begin
   Assert.AreEqual('M', fMotif.find('x:1'), '8');
   Assert.AreEqual('John', fMotif.find('x:John'), '9');
 
+  fMotif.clear;
+  fMotif.add('', 'R');
+  Assert.AreEqual('R', fMotif.find(''));
+
 end;
 
 procedure TTestMotif.delete;
@@ -98,11 +107,43 @@ begin
   Assert.AreEqual('2', fMotif.find('XYZ: 2000'));
 end;
 
+procedure TTestMotif.deleteIntermediate;
+begin
+  fMotif.clear;
+  fMotif.add('{a:1, b:2, d:4}', 'XX')
+        .add('c:3, d:4', 'YY')
+        .add('a:1, b:2', 'X')
+        .add('c:3', 'Y');
+
+  fMotif.remove('c:3');
+
+  Assert.AreEqual('', fMotif.find('c:3'), '1');
+
+  fMotif.remove('a:1, b:2');
+
+  Assert.AreEqual('', fMotif.find('c:3'), '2');
+  Assert.AreEqual('', fMotif.find('a:1, b:2'), '3');
+end;
+
 procedure TTestMotif.glob;
 begin
   fMotif.add('b:1,c:x*y', 'BC');
 
   Assert.AreEqual('BC', fMotif.Find('b:1,c:xhy'));
+end;
+
+procedure TTestMotif.globBack;
+begin
+  fMotif.clear;
+  fMotif.add('a:1, b:2', 'X')
+        .add('c:3', 'Y');
+  Assert.AreEqual('X', fMotif.find('a:1, b:2'), '1');
+
+  fMotif.add('a:1, b:2, d:4', 'XX')
+        .add('{c:3, d:4 }', 'YY');
+
+  Assert.AreEqual('XX', fMotif.find('a:1, b:2, d:4'), '3');
+  Assert.AreEqual('X', fMotif.find('a:1, b:2'), '5');
 end;
 
 procedure TTestMotif.listAll;

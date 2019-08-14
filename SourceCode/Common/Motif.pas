@@ -61,7 +61,11 @@ var
   arrList: TList<string>;
   tag: string;
 begin
-  tag:=aPattern.Replace('{','').Replace('}','').Replace('''','').ToUpper;
+  tag:=aPattern.Replace('{','')
+               .Replace('}','')
+               .Replace('''','')
+               .Trim
+               .ToUpper;
 
   strArray:=TArrayRecord<string>.Create(tag.Split([',']));
   strArray.ForEach(procedure(var Value: string; Index: integer)
