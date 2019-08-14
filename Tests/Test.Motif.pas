@@ -69,6 +69,13 @@ begin
 
   Assert.AreEqual('', fMotif.find('x:2, y:2'), '6');
   Assert.AreEqual('', fMotif.find('y:1'), '7');
+
+  fMotif.clear;
+  fMotif.add('{x:1}', 'M')
+        .add('{x:''John''}', 'John');
+  Assert.AreEqual('M', fMotif.find('x:1'), '8');
+  Assert.AreEqual('John', fMotif.find('x:John'), '9');
+
 end;
 
 procedure TTestMotif.delete;

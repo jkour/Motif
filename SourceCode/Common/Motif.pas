@@ -46,16 +46,20 @@ function TMotif.prepareTag(const aPattern: string): string;
 var
   strArray: TArrayRecord<string>;
   arrList: TList<string>;
+  tag: string;
 begin
-  strArray:=TArrayRecord<string>.Create(aPattern.Split([',']));
+  tag:=aPattern.Replace('{','').Replace('}','').Replace('''','').ToUpper;
+
+  strArray:=TArrayRecord<string>.Create(tag.Split([',']));
   strArray.ForEach(procedure(var Value: string; Index: integer)
                    begin
-                     Value:=Value.Trim.ToUpper;
+                     Value:=Value.Trim;
                    end);
-
   arrList:=TList<string>.Create;
   strArray.List(arrList);
+
   result:=string.Join(',', arrList.ToArray);
+
   arrList.Free;
 end;
 
