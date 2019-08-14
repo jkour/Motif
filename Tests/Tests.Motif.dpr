@@ -13,7 +13,12 @@ uses
   DUnitX.TestFramework,
   Test.Motif in 'Test.Motif.pas',
   Motif in '..\SourceCode\Common\Motif.pas',
-  ArrayHelper in '..\SourceCode\ThirdParty\ArrayHelper.pas';
+  ArrayHelper in '..\SourceCode\ThirdParty\ArrayHelper.pas',
+  flcUtils in '..\SourceCode\ThirdParty\flcUtils.pas',
+  flcStrings in '..\SourceCode\ThirdParty\flcStrings.pas',
+  flcStringPatternMatcher in '..\SourceCode\ThirdParty\flcStringPatternMatcher.pas',
+  flcStdTypes in '..\SourceCode\ThirdParty\flcStdTypes.pas',
+  flcASCII in '..\SourceCode\ThirdParty\flcASCII.pas';
 
 var
   runner : ITestRunner;

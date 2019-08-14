@@ -24,7 +24,6 @@ type
     function prepareTag(const aPattern: string): string;
     function getPatternItem (const aPattern: string; const aExact: Boolean): TPatternItem;
     function getPatternItemResponse(const index: integer): string;
-    function getPatternItemFunc(const index: integer): Pointer;
   public
     function add(const aPattern: string; const aReturn: string = ''): TMotif; overload;
     function add<T>(const aPattern: string; const aFunc: TFunc<T>):TMotif; overload;
@@ -41,7 +40,7 @@ type
 implementation
 
 uses
-  ArrayHelper, System.Generics.Collections, System.TypInfo;
+  ArrayHelper, System.Generics.Collections, System.TypInfo, flcStringPatternMatcher;
 
 function TMotif.prepareTag(const aPattern: string): string;
 var
@@ -68,6 +67,7 @@ var
   index: integer;
   tag: string;
   item: TPatternItem;
+  strItem: string;
 begin
   result:=nil;
   tag:=prepareTag(aPattern);
@@ -79,6 +79,17 @@ begin
   end;
   if aExact or Assigned(Result) then
     Exit;
+  // Need to check for glob pattern
+  for strItem in fList do
+  begin
+    if StrZMatchPatternW(PWideChar(strItem), PWideChar(tag)) > 0 then
+    begin
+      item:=fList.Objects[fList.IndexOf(strItem)] as TPatternItem;
+      if Assigned(item) then
+        result:=item;
+      Break;
+    end;
+  end;
   arrStr:=TArrayRecord<string>.Create(tag.Split([',']));
   while arrStr.Count > 0 do
   begin
@@ -95,13 +106,22 @@ begin
       if Assigned(item) then
         Result:=item;
       Break;
+    end
+    else
+    begin
+      // Need to check for glob pattern
+      for strItem in fList do
+      begin
+        if StrZMatchPatternW(PWideChar(strItem), PWideChar(tag)) > 0 then
+        begin
+          item:=fList.Objects[fList.IndexOf(strItem)] as TPatternItem;
+          if Assigned(item) then
+            result:=item;
+          Break;
+        end;
+      end;
     end;
   end;
-end;
-
-function TMotif.getPatternItemFunc(const index: integer): Pointer;
-begin
-
 end;
 
 function TMotif.getPatternItemResponse(const index: integer): string;

@@ -38,6 +38,9 @@ type
 
     [Test]
     procedure countiesConvoluted;
+
+    [Test]
+    procedure glob;
   end;
 
 implementation
@@ -53,19 +56,19 @@ begin
   fMotif.add('x:1', 'A')
         .add('x:1, y:1', 'B')
         .add('x:1, y:2', 'C')
-        .add('x:1, y:2, z:3', 'D')
-        .add('x:1, y:1', 'F'); // This is ignored
+        .add('x:1, y:2, z:3', 'D');
+      //  .add('x:1, y:1', 'F'); // This is ignored
 
   Assert.AreEqual('A', fMotif.find('x:1'), '1');
   Assert.AreEqual('', fMotif.find('x:2'), '2');
   Assert.AreEqual('B', fMotif.find('x:1, y:1'), '3');
 
   Assert.AreEqual('C', fMotif.find('x:1, y:2'), '4');
-  Assert.AreEqual('D', fMotif.find('x:1, y:2, z:3'), '4');
+  Assert.AreEqual('D', fMotif.find('x:1, y:2, z:3'), '5');
 
 
-  Assert.AreEqual('', fMotif.find('x:2, y:2'), '5');
-  Assert.AreEqual('', fMotif.find('y:1'), '6');
+  Assert.AreEqual('', fMotif.find('x:2, y:2'), '6');
+  Assert.AreEqual('', fMotif.find('y:1'), '7');
 end;
 
 procedure TTestMotif.delete;
@@ -81,11 +84,15 @@ begin
   Assert.AreEqual('2', fMotif.find('XYZ: 2000'));
 end;
 
+procedure TTestMotif.glob;
+begin
+  fMotif.add('b:1,c:x*y', 'BC');
+
+  Assert.AreEqual('BC', fMotif.Find('b:1,c:xhy'));
+end;
+
 procedure TTestMotif.countiesConvoluted;
 begin
-//  .add({ country:'US', state:'NY', type:'reduced' }, function under110(net){
-//    return net < 110 ? 0.0 : salestax.find( {country:'US', state:'NY'} )
-//  })
   fMotif.add<Double>('country:US, state:NY', function:Double
                                              begin
                                                result:=0.07;
@@ -96,6 +103,7 @@ begin
                         result:=fMotif.find<double>('country:US,state:NY');
                       end);
   Assert.AreEqual(Double(0.07), fMotif.find<Double>('country:US,state:NY,type:reduced'));
+
 end;
 
 procedure TTestMotif.countries(const aTag: string; const aRate, aExpected:
