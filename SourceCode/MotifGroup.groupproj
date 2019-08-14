@@ -12,6 +12,9 @@
         <Projects Include="..\Tests\Tests.Motif.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="..\Benchmarks\Benchmarks.Motif.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -47,14 +50,23 @@
     <Target Name="Tests_Motif:Make">
         <MSBuild Projects="..\Tests\Tests.Motif.dproj" Targets="Make"/>
     </Target>
+    <Target Name="Benchmarks_Motif">
+        <MSBuild Projects="..\Benchmarks\Benchmarks.Motif.dproj"/>
+    </Target>
+    <Target Name="Benchmarks_Motif:Clean">
+        <MSBuild Projects="..\Benchmarks\Benchmarks.Motif.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Benchmarks_Motif:Make">
+        <MSBuild Projects="..\Benchmarks\Benchmarks.Motif.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="Motif_D103;Demo_Basic;Tests_Motif"/>
+        <CallTarget Targets="Motif_D103;Demo_Basic;Tests_Motif;Benchmarks_Motif"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Motif_D103:Clean;Demo_Basic:Clean;Tests_Motif:Clean"/>
+        <CallTarget Targets="Motif_D103:Clean;Demo_Basic:Clean;Tests_Motif:Clean;Benchmarks_Motif:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Motif_D103:Make;Demo_Basic:Make;Tests_Motif:Make"/>
+        <CallTarget Targets="Motif_D103:Make;Demo_Basic:Make;Tests_Motif:Make;Benchmarks_Motif:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
