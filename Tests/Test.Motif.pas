@@ -10,6 +10,8 @@ type
   TTestMotif = class(TObject)
   private
     fMotif: TMotif;
+    procedure OnNewAdd(const aPattern: string; var aValue: string;
+                                              var aContinue:Boolean);
   public
     [Setup]
     procedure setup;
@@ -41,6 +43,9 @@ type
 
     [Test]
     procedure glob;
+
+    [Test]
+    procedure toUpper;
   end;
 
 implementation
@@ -98,6 +103,12 @@ begin
   Assert.AreEqual('BC', fMotif.Find('b:1,c:xhy'));
 end;
 
+procedure TTestMotif.OnNewAdd(const aPattern: string; var aValue: string;
+  var aContinue: Boolean);
+begin
+  aValue:=aValue.ToUpper;
+end;
+
 procedure TTestMotif.countiesConvoluted;
 begin
   fMotif.add<Double>('country:US, state:NY', function:Double
@@ -140,6 +151,17 @@ end;
 procedure TTestMotif.tearDown;
 begin
   fMotif.Free;
+end;
+
+procedure TTestMotif.toUpper;
+begin
+  fMotif.clear;
+  fMotif.add('role','user');
+  fMotif.OnBeforeAdd:=OnNewAdd;
+  fMotif.add('cmd','login');
+
+  Assert.AreEqual('user', fMotif.find('role'));
+  Assert.AreEqual('LOGIN', fMotif.find('cmd'));
 end;
 
 initialization

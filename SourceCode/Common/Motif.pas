@@ -17,9 +17,13 @@ type
     property Value: TValue read fValue write fValue;
   end;
 
+  TOnBeforeAdd = procedure (const aPattern: string; var aValue: string;
+                                var aContinue:Boolean) of object;
+
   TMotif = class
   private
     fList: TStringList;
+    fOnBeforeAdd: TOnBeforeAdd;
     procedure addFuncValue(const aPattern: string; const aValue: TValue);
     function prepareTag(const aPattern: string): string;
     function getPatternItem (const aPattern: string; const aExact: Boolean): TPatternItem;
@@ -28,13 +32,14 @@ type
     function add(const aPattern: string; const aReturn: string = ''): TMotif; overload;
     function add<T>(const aPattern: string; const aFunc: TFunc<T>):TMotif; overload;
     function find (const aPattern: string; const aExact: Boolean = False): string; overload;
-    function find<T>(const aPattern: string; const aExact: Boolean = False): T;
-        overload;
+    function find<T>(const aPattern: string; const aExact: Boolean = False): T; overload;
     procedure remove (const aPattern: string);
     procedure clear;
   public
     constructor Create;
     destructor Destroy; override;
+
+    property OnBeforeAdd: TOnBeforeAdd read fOnBeforeAdd write fOnBeforeAdd;
   end;
 
 implementation
@@ -149,15 +154,28 @@ var
   tag: string;
   index: Integer;
   patItem: TPatternItem;
+  patt: string;
+  ret: string;
+  cont: Boolean;
 begin
+  Result:=Self;
+
+  patt:=aPattern;
+  ret:=aReturn;
+  cont:=True;
+
+  if Assigned(fOnBeforeAdd) then
+    fOnBeforeAdd(aPattern, ret, cont);
+  if not cont then
+    Exit;
+
   tag:=prepareTag(aPattern);
   if not fList.Find(tag, index) then
   begin
     patItem:=TPatternItem.Create;
-    patItem.Response:=aReturn;
+    patItem.Response:=ret;
     fList.AddObject(tag, patItem);
   end;
-  Result:=Self;
 end;
 
 function TMotif.add<T>(const aPattern: string; const aFunc: TFunc<T>): TMotif;
