@@ -12,7 +12,6 @@ uses
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
   Test.Motif in 'Test.Motif.pas',
-  Motif.Types in '..\SourceCode\Common\Motif.Types.pas',
   Motif in '..\SourceCode\Common\Motif.pas',
   ArrayHelper in '..\SourceCode\ThirdParty\ArrayHelper.pas';
 

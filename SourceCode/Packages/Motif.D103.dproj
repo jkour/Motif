@@ -115,7 +115,6 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="rtl.dcp"/>
-        <DCCReference Include="..\Common\Motif.Types.pas"/>
         <DCCReference Include="..\Common\Motif.pas"/>
         <DCCReference Include="..\ThirdParty\ArrayHelper.pas"/>
         <BuildConfiguration Include="Release">

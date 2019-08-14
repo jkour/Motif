@@ -31,7 +31,6 @@ requires
   rtl;
 
 contains
-  Motif.Types in '..\Common\Motif.Types.pas',
   Motif in '..\Common\Motif.pas',
   ArrayHelper in '..\ThirdParty\ArrayHelper.pas';
 
