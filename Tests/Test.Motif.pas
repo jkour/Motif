@@ -46,6 +46,9 @@ type
 
     [Test]
     procedure toUpper;
+
+    [Test]
+    procedure listAll;
   end;
 
 implementation
@@ -62,7 +65,6 @@ begin
         .add('x:1, y:1', 'B')
         .add('x:1, y:2', 'C')
         .add('x:1, y:2, z:3', 'D');
-      //  .add('x:1, y:1', 'F'); // This is ignored
 
   Assert.AreEqual('A', fMotif.find('x:1'), '1');
   Assert.AreEqual('', fMotif.find('x:2'), '2');
@@ -101,6 +103,22 @@ begin
   fMotif.add('b:1,c:x*y', 'BC');
 
   Assert.AreEqual('BC', fMotif.Find('b:1,c:xhy'));
+end;
+
+procedure TTestMotif.listAll;
+var
+  list: string;
+begin
+  fMotif.clear;
+  fMotif.add('ABC: 1000', '1')
+        .add('XYZ: 2000', '2');
+  list:=fMotif.list('');
+  Assert.AreEqual('Available Patterns:'+sLineBreak+
+                  'Pattern: ABC: 1000: 1'+sLineBreak+
+                  'Pattern: XYZ: 2000: 2', list.Trim);
+  list:=fMotif.list('ABC: 1000');
+  Assert.AreEqual('Available Patterns:'+sLineBreak+
+                  'Pattern: ABC: 1000: 1', list.Trim);
 end;
 
 procedure TTestMotif.OnNewAdd(const aPattern: string; var aValue: string;

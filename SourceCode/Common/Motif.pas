@@ -24,16 +24,24 @@ type
   private
     fList: TStringList;
     fOnBeforeAdd: TOnBeforeAdd;
+
     procedure addFuncValue(const aPattern: string; const aValue: TValue);
+
     function prepareTag(const aPattern: string): string;
+
     function getPatternItem (const aPattern: string; const aExact: Boolean): TPatternItem;
     function getPatternItemResponse(const index: integer): string;
   public
     function add(const aPattern: string; const aReturn: string = ''): TMotif; overload;
     function add<T>(const aPattern: string; const aFunc: TFunc<T>):TMotif; overload;
-    function find (const aPattern: string; const aExact: Boolean = False): string; overload;
+
+    function find(const aPattern: string; const aExact: Boolean = False): string; overload;
     function find<T>(const aPattern: string; const aExact: Boolean = False): T; overload;
-    procedure remove (const aPattern: string);
+
+    function list(const aPattern: string; const aExact: Boolean = False): string;
+
+    procedure remove(const aPattern: string);
+
     procedure clear;
   public
     constructor Create;
@@ -147,6 +155,25 @@ begin
   end;
 end;
 
+function TMotif.list(const aPattern: string; const aExact: Boolean): string;
+var
+  pattItem: TPatternItem;
+  strPattern: string;
+begin
+  Result:='Available Patterns:';
+  if (aPattern.Trim = '') or (aPattern = '*') then
+  begin
+    for strPattern in fList do
+    begin
+      Result:=Result+sLineBreak+'Pattern: '+strPattern+': '+find(strPattern, aExact);
+    end;
+  end
+  else
+  begin
+    Result:=Result+sLineBreak+'Pattern: '+aPattern+': '+find(aPattern, aExact);
+  end;
+end;
+
 { TMotif }
 
 function TMotif.add(const aPattern: string; const aReturn: string = ''): TMotif;
@@ -251,6 +278,7 @@ var
   patItem: TPatternItem;
 begin
   patItem:=TPatternItem.Create;
+  patItem.Response:='Function';
   patItem.Value:=aValue;
   fList.AddObject(aPattern, patItem);
 end;
