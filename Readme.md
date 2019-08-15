@@ -64,6 +64,8 @@ b:1, xAy
 b:1, xhy
 ...
 ```
+The pattern works the other way around. A request to ```b:*``` will also return a list with ```BC``` and any additional patterns registered with the prefix ```b:```
+
 
 # Customisation
 You can change the way values are stored in Motif. Before Motif adds a value to the internal collection, it fires the ```OnBeforeAdd``` event.
