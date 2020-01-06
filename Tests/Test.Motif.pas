@@ -78,26 +78,26 @@ begin
 
   /// This approach to use find generates mem leaks
   ///  the list received by find should be manually freed
-  Assert.AreEqual('A', fMotif.find('x:1')[0], '1');
-  Assert.AreEqual(0, fMotif.find('x:2').Count, '2');
-  Assert.AreEqual('B', fMotif.find('x:1, y:1')[0], '3');
+  Assert.AreEqual('A', fMotif.findByPattern('x:1')[0], '1');
+  Assert.AreEqual(0, fMotif.findByPattern('x:2').Count, '2');
+  Assert.AreEqual('B', fMotif.findByPattern('x:1, y:1')[0], '3');
 
-  Assert.AreEqual('C', fMotif.find('x:1, y:2')[0], '4');
-  Assert.AreEqual('D', fMotif.find('x:1, y:2, z:3')[0], '5');
+  Assert.AreEqual('C', fMotif.findByPattern('x:1, y:2')[0], '4');
+  Assert.AreEqual('D', fMotif.findByPattern('x:1, y:2, z:3')[0], '5');
 
 
-  Assert.AreEqual(0, fMotif.find('x:2, y:2').Count, '6');
-  Assert.AreEqual(0, fMotif.find('y:1').Count, '7');
+  Assert.AreEqual(0, fMotif.findByPattern('x:2, y:2').Count, '6');
+  Assert.AreEqual(0, fMotif.findByPattern('y:1').Count, '7');
 
   fMotif.clear;
   fMotif.add('{x:1}', 'M')
         .add('{x:''John''}', 'John');
-  Assert.AreEqual('M', fMotif.find('x:1')[0], '8');
-  Assert.AreEqual('John', fMotif.find('x:John')[0], '9');
+  Assert.AreEqual('M', fMotif.findByPattern('x:1')[0], '8');
+  Assert.AreEqual('John', fMotif.findByPattern('x:John')[0], '9');
 
   fMotif.clear;
   fMotif.add('', 'R');
-  Assert.AreEqual('R', fMotif.find('')[0]);
+  Assert.AreEqual('R', fMotif.findByPattern('')[0]);
 
 end;
 
@@ -106,11 +106,11 @@ begin
   fMotif.add('ABC: 1000', '1')
         .add('XYZ: 2000', '2');
 
-  Assert.AreEqual('1', fMotif.find('ABC: 1000')[0]);
-  Assert.AreEqual('2', fMotif.find('XYZ: 2000')[0]);
+  Assert.AreEqual('1', fMotif.findByPattern('ABC: 1000')[0]);
+  Assert.AreEqual('2', fMotif.findByPattern('XYZ: 2000')[0]);
 
   fMotif.remove('ABC: 1000');
-  Assert.AreEqual('2', fMotif.find('XYZ: 2000')[0]);
+  Assert.AreEqual('2', fMotif.findByPattern('XYZ: 2000')[0]);
 end;
 
 procedure TTestMotif.deleteIntermediate;
@@ -123,19 +123,19 @@ begin
 
   fMotif.remove('c:3');
 
-  Assert.AreEqual(0, fMotif.find('c:3').Count, '1');
+  Assert.AreEqual(0, fMotif.findByPattern('c:3').Count, '1');
 
   fMotif.remove('a:1, b:2');
 
-  Assert.AreEqual(0, fMotif.find('c:3').Count, '2');
-  Assert.AreEqual(0, fMotif.find('a:1, b:2').Count, '3');
+  Assert.AreEqual(0, fMotif.findByPattern('c:3').Count, '2');
+  Assert.AreEqual(0, fMotif.findByPattern('a:1, b:2').Count, '3');
 end;
 
 procedure TTestMotif.glob;
 begin
   fMotif.add('b:1,c:x*y', 'BC');
 
-  Assert.AreEqual('BC', fMotif.Find('b:1,c:xhy')[0]);
+  Assert.AreEqual('BC', fMotif.findByPattern('b:1,c:xhy')[0]);
 end;
 
 procedure TTestMotif.globBack;
@@ -143,13 +143,13 @@ begin
   fMotif.clear;
   fMotif.add('a:1, b:2', 'X')
         .add('c:3', 'Y');
-  Assert.AreEqual('X', fMotif.find('a:1, b:2')[0], '1');
+  Assert.AreEqual('X', fMotif.findByPattern('a:1, b:2')[0], '1');
 
   fMotif.add('a:1, b:2, d:4', 'XX')
         .add('{c:3, d:4 }', 'YY');
 
-  Assert.AreEqual('XX', fMotif.find('a:1, b:2, d:4')[0], '3');
-  Assert.AreEqual('X', fMotif.find('a:1, b:2')[0], '5');
+  Assert.AreEqual('XX', fMotif.findByPattern('a:1, b:2, d:4')[0], '3');
+  Assert.AreEqual('X', fMotif.findByPattern('a:1, b:2')[0], '5');
 end;
 
 procedure TTestMotif.globFind;
@@ -161,7 +161,7 @@ begin
   fMotif.add('ABC: 200', '20');
   fMotif.add('XYZ: 300', '30');
 
-  list:=fMotif.find('ABC: *');
+  list:=fMotif.findByPattern('ABC: *');
   Assert.AreEqual(2, list.count);
   Assert.AreEqual('10', list[0]);
   Assert.AreEqual('20', list[1]);
@@ -191,7 +191,7 @@ begin
   fMotif.add('ABC: 100', '20');
   fMotif.add('XYZ: 300', '30');
 
-  list:=fMotif.find('ABC: 100');
+  list:=fMotif.findByPattern('ABC: 100');
   Assert.AreEqual(2, list.Count);
   Assert.AreEqual('10', list[0]);
   Assert.AreEqual('20', list[1]);
@@ -214,12 +214,12 @@ begin
                       var
                         list: TList<Double>;
                       begin
-                        list:=fMotif.find<double>('country:US,state:NY');
+                        list:=fMotif.findClassByPattern<double>('country:US,state:NY');
                         result:=list[0];
                         list.free;
                       end);
 
-  Assert.AreEqual(Double(0.07), fMotif.find<Double>('country:US,state:NY,type:reduced')[0]);
+  Assert.AreEqual(Double(0.07), fMotif.findClassByPattern<Double>('country:US,state:NY,type:reduced')[0]);
 
 end;
 
@@ -240,8 +240,7 @@ begin
                                    begin
                                      result:=taxFunc(aRate);
                                    end);
-  list:= fMotif.find<Double>(aTag);
-var g:=list.Count;
+  list:= fMotif.findClassByPattern<Double>(aTag);
   Assert.AreEqual(aExpected, list[0]);
   list.Free;
 end;
@@ -263,8 +262,8 @@ begin
   fMotif.OnBeforeAdd:=OnNewAdd;
   fMotif.add('cmd','login');
 
-  Assert.AreEqual('user', fMotif.find('role')[0]);
-  Assert.AreEqual('LOGIN', fMotif.find('cmd')[0]);
+  Assert.AreEqual('user', fMotif.findByPattern('role')[0]);
+  Assert.AreEqual('LOGIN', fMotif.findByPattern('cmd')[0]);
 end;
 
 initialization

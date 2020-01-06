@@ -14,6 +14,7 @@ type
     procedure setTag(const aValue: string);
   public
     constructor Create;
+    destructor Destroy; override;
 
     property Response: string read fResponse write fResponse;
     property Tag: string read fTag write setTag;
@@ -48,13 +49,16 @@ type
     ///   The consumer of the function is responsible for destroying the list
     /// </remarks>
     {$ENDREGION}
-    function find(const aPattern: string; const aExact: Boolean = False): TList<string>; overload;
-    function find<T>(const aPattern: string; const aExact: Boolean = False):
-        TList<T>; overload;
+    function findByPattern(const aPattern: string; const aExact: Boolean = False): TList<string>;
+          inline;
+    function findClassByPattern<T>(const aPattern: string; const aExact: Boolean = False):
+        TList<T>;
+         inline;
 
     function list(const aPattern: string; const aExact: Boolean = False): string;
 
     procedure remove(const aPattern: string);
+
 
     procedure clear;
   public
@@ -67,12 +71,11 @@ type
 implementation
 
 uses
-  ArrayHelper, System.TypInfo, flcStringPatternMatcher;
+  ArrayHelper, System.TypInfo, flcStringPatternMatcher, Aurelius.Criteria.Projections;
 
 function TMotif.getGlobPatternItem(const itemString, tag: string):
     TList<TPatternItem>;
 var
-  item: TPatternItem;
   pattern: string;
   testStr: string;
 begin
@@ -203,12 +206,10 @@ end;
 function TMotif.add(const aPattern: string; const aReturn: string = ''): TMotif;
 var
   tag: string;
-  index: Integer;
   patItem: TPatternItem;
   patt: string;
   ret: string;
   cont: Boolean;
-  list: TList<TPatternItem>;
 begin
   Result:=Self;
 
@@ -248,7 +249,7 @@ begin
   addItem(tag, item);
 end;
 
-function TMotif.find(const aPattern: string; const aExact: Boolean = False):
+function TMotif.findByPattern(const aPattern: string; const aExact: Boolean = False):
     TList<string>;
 var
   item: TPatternItem;
@@ -260,7 +261,7 @@ begin
       Result.Add(item.Response);
 end;
 
-function TMotif.find<T>(const aPattern: string; const aExact: Boolean = False):
+function TMotif.findClassByPattern<T>(const aPattern: string; const aExact: Boolean = False):
     TList<T>;
 var
   item: TPatternItem;
@@ -275,7 +276,6 @@ end;
 function TMotif.list(const aPattern: string; const aExact: Boolean): string;
 var
   pattItem: TPatternItem;
-  strPattern: string;
 begin
   Result:='';
   fItemsList.Clear;
@@ -309,7 +309,22 @@ begin
 end;
 
 procedure TMotif.clear;
+var
+  list: TList<TPatternItem>;
+  item: TPatternItem;
+  index: integer;
 begin
+  for index:=0 to fList.Count-1 do
+  begin
+    list:=fList.Objects[index] as TList<TPatternItem>;
+    if Assigned(list) then
+    begin
+      for item in list do
+        item.Free;
+      // list is freed when fList is destroyed because it owns the objects
+      // list.Free;
+    end;
+  end;
   fList.Clear;
 end;
 
@@ -325,20 +340,7 @@ begin
 end;
 
 destructor TMotif.Destroy;
-var
-  list: TList<TPatternItem>;
-  item: TPatternItem;
-  index: integer;
 begin
-  for index:=0 to fList.Count-1 do
-  begin
-    list:=fList.Objects[index] as TList<TPatternItem>;
-    if Assigned(list) then
-    begin
-      for item in list do
-        item.Free;
-    end;
-  end;
   fList.Free;
   fItemsList.Free;
   inherited;
@@ -356,7 +358,9 @@ begin
     begin
       list.Add(aItem);
       fList.Objects[index]:=list;
-    end;
+    end
+    else
+      aItem.Free;
   end
   else
   begin
@@ -371,6 +375,12 @@ begin
   inherited;
   fResponse:='';
   fValue:=TValue.Empty;
+end;
+
+destructor TPatternItem.Destroy;
+begin
+  fValue:=TValue.Empty;
+  inherited;
 end;
 
 procedure TPatternItem.setTag(const aValue: string);

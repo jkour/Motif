@@ -38,10 +38,10 @@ begin
                                      end);
 
     Writeln('For an item with net value £100.00, the final price is: '+
-              (100 + 100 * motif.find<double>('country: UK')).toString);
+              (100 + 100 * motif.findClassByPattern<double>('country: UK')[0]).ToString);
 
     Writeln('For food with net value £100.00, the final price is: '+
-              (100 + 100 * motif.find<double>('country: UK, type: food')).toString);
+              (100 + 100 * motif.findClassByPattern<double>('country: UK, type: food')[0]).toString);
 
     Readln;
 

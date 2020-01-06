@@ -29,7 +29,7 @@ var
 begin
   inherited;
   for num:=0 to 999 do
-    fMotif.find('x: 500');
+    fMotif.findByPattern('x: 500');
 end;
 
 procedure TBenchmarkFind.setDown;

@@ -29,7 +29,7 @@ var
 begin
   inherited;
   for num:=0 to 999 do
-    fMotif.find('x: AZB, y: 500');
+    fMotif.findByPattern('x: AZB, y: 500');
 end;
 
 procedure TBenchmarkFindGlob.setDown;
