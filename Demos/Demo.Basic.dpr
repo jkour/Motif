@@ -5,14 +5,7 @@ program Demo.Basic;
 {$R *.res}
 
 uses
-  System.SysUtils,
-  Motif in '..\SourceCode\Common\Motif.pas',
-  flcUtils in '..\SourceCode\ThirdParty\flcUtils.pas',
-  flcStrings in '..\SourceCode\ThirdParty\flcStrings.pas',
-  flcStringPatternMatcher in '..\SourceCode\ThirdParty\flcStringPatternMatcher.pas',
-  flcStdTypes in '..\SourceCode\ThirdParty\flcStdTypes.pas',
-  flcASCII in '..\SourceCode\ThirdParty\flcASCII.pas',
-  ArrayHelper in '..\SourceCode\ThirdParty\ArrayHelper.pas';
+  System.SysUtils;
 
 var
   taxFunc: TFunc<Double, Double>;

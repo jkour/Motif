@@ -173,6 +173,11 @@
         <DCCReference Include="..\ThirdParty\flcStringPatternMatcher.pas"/>
         <DCCReference Include="..\ThirdParty\flcStrings.pas"/>
         <DCCReference Include="..\ThirdParty\flcUtils.pas"/>
+        <DCCReference Include="..\ThirdParty\Quick.Arrays.pas"/>
+        <DCCReference Include="..\ThirdParty\Quick.Lists.pas"/>
+        <DCCReference Include="..\ThirdParty\Quick.RTTI.Utils.pas"/>
+        <DCCReference Include="..\ThirdParty\Quick.Value.pas"/>
+        <DCCReference Include="..\ThirdParty\Quick.Commons.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -216,6 +221,12 @@
                     </Platform>
                 </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx64\libcgsqlite3.dylib" Class="DependencyModule"/>
+                <DeployFile LocalName="..\..\Builds\Motif_D103\Win32.(Config)\Motif.D103.bpl" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>Motif_D103.bpl</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="..\..\Builds\Motif_D103\Win32\Debug\Motif.D103.bpl" Configuration="Debug" Class="ProjectOutput"/>
                 <DeployClass Name="AdditionalDebugSymbols">
                     <Platform Name="OSX32">

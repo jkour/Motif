@@ -82,6 +82,7 @@
         <VerInfo_Locale>2057</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <DCC_DcpOutput>..\ZZZ - Temp\Benchmarks.Motif\$(Platform).$(Config)\dcp</DCC_DcpOutput>
+        <DCC_UnitSearchPath>..\SourceCode\Common;..\SourceCode\ThirdParty;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
         <DCC_UsePackage>DBXSqliteDriver;RESTComponents;DBXInterBaseDriver;tethering;TMSScripter;FMXTMSFNCUIPackPkgDXE12;bindcompfmx;fmx;FireDACIBDriver;RDesignUX;dbexpress;IndyCore;xdata;RDesignChart;dsnap;FireDACCommon;RESTBackendComponents;soapserver;TMSLoggingPkgFMXDXE12;bindengine;CloudService;FireDACCommonDriver;inet;bindcompdbx;IndyIPCommon;IndyIPServer;sparkle;tmsbcl;IndySystem;FMXTMSFNCCorePkgDXE12;fmxFireDAC;FireDAC;FireDACSqliteDriver;soaprtl;DbxCommonDriver;xmlrtl;soapmidas;rtl;DbxClientDriver;CustomIPTransport;bindcomp;IndyIPClient;TMSLoggingPkgCoreDXE12;TMSCryptoPkgDXE12;dbxcds;aurelius;dsnapxml;dbrtl;IndyProtocols;FMXTMSFNCChartPkgDXE12;$(DCC_UsePackage)</DCC_UsePackage>
@@ -210,13 +211,6 @@
         <DCCReference Include="Core\Core.Benchmark.Base.pas"/>
         <DCCReference Include="Core\Core.BenchmarkManager.pas"/>
         <DCCReference Include="Benchmarks\Benchmarks.Add.pas"/>
-        <DCCReference Include="..\SourceCode\Common\Motif.pas"/>
-        <DCCReference Include="..\SourceCode\ThirdParty\flcUtils.pas"/>
-        <DCCReference Include="..\SourceCode\ThirdParty\flcStrings.pas"/>
-        <DCCReference Include="..\SourceCode\ThirdParty\flcStringPatternMatcher.pas"/>
-        <DCCReference Include="..\SourceCode\ThirdParty\flcStdTypes.pas"/>
-        <DCCReference Include="..\SourceCode\ThirdParty\flcASCII.pas"/>
-        <DCCReference Include="..\SourceCode\ThirdParty\ArrayHelper.pas"/>
         <DCCReference Include="Benchmarks\Benchmarks.Remove.pas"/>
         <DCCReference Include="Benchmarks\Benchmarks.Find.pas"/>
         <DCCReference Include="Benchmarks\Benchmarks.Find.Glob.pas"/>
@@ -264,6 +258,12 @@
                 </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx64\libcgsqlite3.dylib" Class="DependencyModule"/>
                 <DeployFile LocalName="..\..\Builds\Benchmarks.Motif\Win32\Debug\Benchmarks.Motif.exe" Configuration="Debug" Class="ProjectOutput"/>
+                <DeployFile LocalName="..\ZZZ - Temp\Benchmarks.Motif\Win32.Debug\Benchmarks.Motif.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>Benchmarks_Motif.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployClass Name="AdditionalDebugSymbols">
                     <Platform Name="iOSSimulator">
                         <Operation>1</Operation>
