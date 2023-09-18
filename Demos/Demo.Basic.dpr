@@ -5,7 +5,8 @@ program Demo.Basic;
 {$R *.res}
 
 uses
-  System.SysUtils;
+  System.SysUtils,
+  Motif;
 
 var
   taxFunc: TFunc<Double, Double>;
