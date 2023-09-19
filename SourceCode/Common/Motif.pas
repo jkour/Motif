@@ -7,15 +7,15 @@ uses
   Quick.Value, Quick.Arrays;
 
 type
-  TOnBeforeAdd = procedure (const aPattern: string; var aValue: string;
-                                var aContinue:Boolean) of object;
+  TMotifItem = class;
+  TOnAdd = procedure (const aPattern: string; var aItem: TMotifItem) of object;
   TMotifItem = class
   private
     fGUID: string;
     fTag: string;
     fValue: TFlexValue;
   public
-    property GUID: string read fGUID write fGUID;
+    property GUID: string read fGUID;
     property Tag: string read fTag write fTag;
     property Value: TFlexValue read fValue write fValue;
   end;
@@ -33,10 +33,12 @@ type
   private
     fItemList: TIndexedObjectList<TMotifItem>;
     fLocatorList: TIndexedObjectList<TLocateItem>;
+    fOnAdd: TOnAdd;
+    fWildcardsNum: UInt32;
 
     function cleanTag(const aTag: string): string;
     function createItems(const aTag: string): TMotifItem;
-    function tagContainsGblob(const aTag: string): boolean;
+    function strContainsGblob(const aTag: string): boolean;
   public
     constructor Create;
     destructor Destroy; override;
@@ -46,19 +48,32 @@ type
 
     procedure clear;
     procedure remove(const aTag:string);
+    function list(const aPattern:string = ''):string;
+  published
+    /// <summary>
+    ///   Called after the item is created
+    /// </summary>
+    property OnAdd: TOnAdd read fOnAdd write fOnAdd;
   end;
 implementation
 
 uses
-  System.Hash, System.SysUtils;
+  System.Hash, System.SysUtils, flcStringPatternMatcher;
 
 function TMotif.add(const aTag, aReturn: string): TMotif;
 var
   item: TMotifItem;
 begin
   result:=self;
+  // item is created in createItems and here we change the Return value
   item:=createItems(aTag);
   item.Value.AsString:=aReturn;
+
+  if strContainsGblob(aTag) then
+    Inc(fWildcardsNum);
+
+  if Assigned(fOnAdd) then
+    fOnAdd(aTag, item);
 end;
 
 constructor TMotif.Create;
@@ -70,6 +85,8 @@ begin
   fLocatorList:=TIndexedObjectList<TLocateItem>.Create(true);
   fLocatorList.Indexes.Add('Tag', 'Tag');
 
+  fOnAdd:=nil;
+  fWildcardsNum:=0;
 end;
 
 function TMotif.createItems(const aTag: string): TMotifItem;
@@ -93,8 +110,9 @@ begin
   loc.GUIDS.Add(guid);
 
   result:=TMotifItem.Create;
-  result.GUID:=GUIDToString(guid);
+  result.fGUID:=GUIDToString(guid);
   result.Tag:=aTag;
+
   fItemList.Add(result);
 end;
 
@@ -109,17 +127,16 @@ function TMotif.find(const aTag: string): TList<TMotifItem>;
 var
   loc: TLocateItem;
   prepTag: string;
-  guid: TGUID;
   list:TList<TMotifItem>;
-begin
-  list:=TList<TMotifItem>.Create;
-  result:=list;
+  needsGlob: boolean;
+  locItem: TLocateItem;
+  num: integer;
 
-  prepTag:=cleanTag(aTag);
-
-  if not tagContainsGblob(prepTag) then
+  procedure extractItems(const aTag: string);
+  var
+    guid: TGUID;
   begin
-    loc:=fLocatorList.Get('Tag', prepTag);
+    loc:=fLocatorList.Get('Tag', aTag);
     if not assigned(loc) then
       Exit
     else
@@ -129,6 +146,57 @@ begin
     end;
   end;
 
+begin
+  list:=TList<TMotifItem>.Create;
+  result:=list;
+
+  prepTag:=cleanTag(aTag);
+
+  needsGlob:= strContainsGblob(prepTag) or (fWildcardsNum > 0);
+
+  if (not needsGlob) then
+  begin
+    extractItems(prepTag);
+  end
+  else
+  begin
+    if prepTag = '*' then
+    begin
+      for locItem in fLocatorList do
+        extractItems(locItem.Tag);
+    end
+    else
+    begin
+      for locItem in fLocatorList do
+      begin
+        if (fWildcardsNum > 0) then
+          num:=StrZMatchPatternW(PWideChar(locItem.Tag), PWideChar(prepTag))
+        else
+          num:=StrZMatchPatternW(PWideChar(prepTag), PWideChar(locItem.Tag));
+
+        if num > 0 then
+          extractItems(locItem.Tag);
+      end;
+    end;
+  end;
+end;
+
+function TMotif.list(const aPattern: string): string;
+var
+  list: TList<TMotifItem>;
+  item: TMotifItem;
+  patt: string;
+begin
+  if aPattern.IsEmpty then
+    patt:='*'
+  else
+    patt:=aPattern;
+  list:=find(patt);
+  result:='';
+  for item in list do
+    result:=result + item.Tag + ' -> ' + item.Value.AsString + sLineBreak;
+  result:=result.Trim;
+  FreeAndNil(list);
 end;
 
 procedure TMotif.remove(const aTag: string);
@@ -146,10 +214,12 @@ begin
       fItemList.Remove(item);
     end;
     fLocatorList.Remove(loc);
+    if strContainsGblob(aTag) then
+      Dec(fWildcardsNum);
   end;
 end;
 
-function TMotif.tagContainsGblob(const aTag: string): boolean;
+function TMotif.strContainsGblob(const aTag: string): boolean;
 var
   prepTag: string;
 begin

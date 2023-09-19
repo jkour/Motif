@@ -10,8 +10,7 @@ type
   TTestMotif = class(TObject)
   private
     fMotif: TMotif;
-//    procedure OnNewAdd(const aPattern: string; var aValue: string;
-//                                              var aContinue:Boolean);
+    procedure OnAdd(const aPattern: string; var aItem: TMotifItem);
   public
     [Setup]
     procedure setup;
@@ -21,9 +20,9 @@ type
     [Test]
     procedure basic;
 
-//    [Test]
-//    procedure multipleSimple;
-//
+    [Test]
+    procedure multipleSimple;
+
     [Test]
     procedure delete;
 
@@ -47,18 +46,18 @@ type
 //    [Test]
 //    procedure countiesConvoluted;
 //
-//    [Test]
-//    procedure glob;
-//    [Test]
-//    procedure globBack;
-//    [Test]
-//    procedure globFind;
-//
-//    [Test]
-//    procedure toUpper;
-//
-//    [Test]
-//    procedure listAll;
+    [Test]
+    procedure glob;
+    [Test]
+    procedure globBack;
+    [Test]
+    procedure globFind;
+
+    [Test]
+    procedure toUpper;
+
+    [Test]
+    procedure listAll;
   end;
 
 implementation
@@ -170,81 +169,92 @@ begin
 
 end;
 
-//procedure TTestMotif.glob;
-//begin
-//  fMotif.add('b:1,c:x*y', 'BC');
-//  var list:TList<String>;
-//  list:=fMotif.findByPattern('b:1,c:xhy');
-//  Assert.AreEqual('BC', fMotif.findByPattern('b:1,c:xhy')[0]);
-//end;
-//
-//procedure TTestMotif.globBack;
-//begin
-//  fMotif.clear;
-//  fMotif.add('a:1, b:2', 'X')
-//        .add('c:3', 'Y');
-//  Assert.AreEqual('X', fMotif.findByPattern('a:1, b:2')[0], '1');
-//
-//  fMotif.add('a:1, b:2, d:4', 'XX')
-//        .add('{c:3, d:4 }', 'YY');
-//
-//  Assert.AreEqual('XX', fMotif.findByPattern('a:1, b:2, d:4')[0], '3');
-//  Assert.AreEqual('X', fMotif.findByPattern('a:1, b:2')[0], '5');
-//end;
-//
-//procedure TTestMotif.globFind;
-//var
-//  list: TList<string>;
-//begin
-//  fMotif.clear;
-//  fMotif.add('ABC: 100', '10');
-//  fMotif.add('ABC: 200', '20');
-//  fMotif.add('XYZ: 300', '30');
-//
-//  list:=TList<string>.Create;
-//  list:=fMotif.findByPattern('ABC: *');
-//  Assert.AreEqual(2, list.count);
-//  Assert.AreEqual('10', list[0]);
-//  Assert.AreEqual('20', list[1]);
-//  list.Free;
-//end;
-//
-//procedure TTestMotif.listAll;
-//var
-//  list: string;
-//begin
-//  fMotif.clear;
-//  fMotif.add('ABC: 1000', '1')
-//        .add('XYZ: 2000', '2');
-//  list:=fMotif.list('');
-////  Assert.AreEqual('ABC: 1000 -> 1'+sLineBreak+
-////                  'XYZ: 2000 -> 2', list.Trim);
-//  list:=fMotif.list('ABC: 1000');
-//  Assert.AreEqual('ABC: 1000 -> 1', list.Trim);
-//end;
-//
-//procedure TTestMotif.multipleSimple;
-//var
-//  list: TList<string>;
-//begin
-//  fMotif.clear;
-//  fMotif.add('ABC: 100', '10');
-//  fMotif.add('ABC: 100', '20');
-//  fMotif.add('XYZ: 300', '30');
-//  fMotif.add('ABC: 100', '500');
-//
-//  list:=fMotif.findByPattern('ABC: 100');
-//  Assert.AreEqual(3, list.Count);
-//  Assert.AreEqual('10', list[0]);
-//  Assert.AreEqual('20', list[1]);
-//end;
-//
-//procedure TTestMotif.OnNewAdd(const aPattern: string; var aValue: string;
-//  var aContinue: Boolean);
-//begin
-//  aValue:=aValue.ToUpper;
-//end;
-//
+procedure TTestMotif.OnAdd(const aPattern: string; var aItem: TMotifItem);
+begin
+  if aItem.Value.IsString then
+    aItem.Value.AsString:=aItem.Value.AsString.ToUpper;
+end;
+
+procedure TTestMotif.glob;
+var
+  list: TList<TMotifItem>;
+begin
+  fMotif.add('b:1,c:x*y', 'BC');
+  list:=fMotif.find('b:1,c:xhy');
+  Assert.AreEqual('BC', list[0].Value.AsString);
+  FreeAndNil(List);
+end;
+
+procedure TTestMotif.globBack;
+var
+  list: TList<TMotifItem>;
+begin
+  fMotif.clear;
+  fMotif.add('a:1, b:2', 'X')
+        .add('c:3', 'Y');
+  list:=fMotif.find('a:1, b:2');
+  Assert.AreEqual('X', list[0].Value.AsString, '1');
+  FreeAndNil(list);
+
+  fMotif.add('a:1, b:2, d:4', 'XX')
+        .add('{c:3, d:4 }', 'YY');
+
+  list:=fMotif.find('a:1, b:2, d:4');
+  Assert.AreEqual('XX', list[0].Value.AsString, '3');
+  FreeAndNil(list);
+
+  list:=fMotif.find('a:1, b:2');
+  Assert.AreEqual('X', list[0].Value.AsString, '5');
+  FreeAndNil(list);
+end;
+
+procedure TTestMotif.globFind;
+var
+  list: TList<TMotifItem>;
+begin
+  fMotif.clear;
+  fMotif.add('ABC: 100', '10');
+  fMotif.add('ABC: 200', '20');
+  fMotif.add('XYZ: 300', '30');
+
+  list:=fMotif.find('ABC: *');
+  Assert.AreEqual(2, list.count);
+  Assert.AreEqual('10', list[0].Value.AsString);
+  Assert.AreEqual('20', list[1].Value.AsString);
+  list.Free;
+end;
+
+procedure TTestMotif.listAll;
+var
+  output: string;
+begin
+  fMotif.clear;
+  fMotif.add('ABC: 1000', '1')
+        .add('XYZ: 2000', '2');
+  output:=fMotif.list;
+  Assert.AreEqual('ABC: 1000 -> 1'+sLineBreak+
+                  'XYZ: 2000 -> 2', output);
+  output:=fMotif.list('ABC: 1000');
+  Assert.AreEqual('ABC: 1000 -> 1', output);
+end;
+
+procedure TTestMotif.multipleSimple;
+var
+  list: TList<TMotifItem>;
+begin
+  fMotif.clear;
+  fMotif.add('ABC: 100', '10');
+  fMotif.add('ABC: 100', '20');
+  fMotif.add('XYZ: 300', '30');
+  fMotif.add('ABC: 100', '500');
+
+  list:=fMotif.find('ABC: 100');
+  Assert.AreEqual(3, list.Count);
+  Assert.AreEqual('10', list[0].Value.AsString);
+  Assert.AreEqual('20', list[1].Value.AsString);
+  list.Free;
+end;
+
 //procedure TTestMotif.countiesConvoluted;
 //begin
 //  fMotif.add<Double>('country:US, state:NY', function:Double
@@ -297,16 +307,24 @@ begin
   fMotif.Free;
 end;
 
-//procedure TTestMotif.toUpper;
-//begin
-//  fMotif.clear;
-//  fMotif.add('role','user');
-//  fMotif.OnBeforeAdd:=OnNewAdd;
-//  fMotif.add('cmd','login');
-//
-//  Assert.AreEqual('user', fMotif.findByPattern('role')[0]);
-//  Assert.AreEqual('LOGIN', fMotif.findByPattern('cmd')[0]);
-//end;
+procedure TTestMotif.toUpper;
+var
+  list: TList<TMotifItem>;
+begin
+  fMotif.clear;
+  fMotif.add('role','user');
+  fMotif.OnAdd:=OnAdd;
+  fMotif.add('cmd','login');
+
+  list:= fMotif.find('role');
+  Assert.AreEqual('user', list[0].Value.AsString);
+  FreeAndNil(list);
+
+  list:= fMotif.find('cmd');
+  Assert.AreEqual('LOGIN', list[0].Value.AsString);
+  Assert.IsTrue('login' <> list[0].Value.AsString);
+  FreeAndNil(list);
+end;
 
 initialization
   TDUnitX.RegisterTestFixture(TTestMotif);
