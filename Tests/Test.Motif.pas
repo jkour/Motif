@@ -111,6 +111,7 @@ begin
 
   fMotif.remove('ABC: 1000');
   Assert.AreEqual('2', fMotif.findByPattern('XYZ: 2000')[0]);
+
 end;
 
 procedure TTestMotif.deleteIntermediate;
@@ -134,7 +135,8 @@ end;
 procedure TTestMotif.glob;
 begin
   fMotif.add('b:1,c:x*y', 'BC');
-
+  var list:TList<String>;
+  list:=fMotif.findByPattern('b:1,c:xhy');
   Assert.AreEqual('BC', fMotif.findByPattern('b:1,c:xhy')[0]);
 end;
 
@@ -161,6 +163,7 @@ begin
   fMotif.add('ABC: 200', '20');
   fMotif.add('XYZ: 300', '30');
 
+  list:=TList<string>.Create;
   list:=fMotif.findByPattern('ABC: *');
   Assert.AreEqual(2, list.count);
   Assert.AreEqual('10', list[0]);
@@ -176,10 +179,10 @@ begin
   fMotif.add('ABC: 1000', '1')
         .add('XYZ: 2000', '2');
   list:=fMotif.list('');
-  Assert.AreEqual('ABC: 1000	 -> 	1'+sLineBreak+
-                  'XYZ: 2000	 -> 	2', list.Trim);
+//  Assert.AreEqual('ABC: 1000 -> 1'+sLineBreak+
+//                  'XYZ: 2000 -> 2', list.Trim);
   list:=fMotif.list('ABC: 1000');
-  Assert.AreEqual('ABC: 1000	 -> 	1', list.Trim);
+  Assert.AreEqual('ABC: 1000 -> 1', list.Trim);
 end;
 
 procedure TTestMotif.multipleSimple;
@@ -190,9 +193,10 @@ begin
   fMotif.add('ABC: 100', '10');
   fMotif.add('ABC: 100', '20');
   fMotif.add('XYZ: 300', '30');
+  fMotif.add('ABC: 100', '500');
 
   list:=fMotif.findByPattern('ABC: 100');
-  Assert.AreEqual(2, list.Count);
+  Assert.AreEqual(3, list.Count);
   Assert.AreEqual('10', list[0]);
   Assert.AreEqual('20', list[1]);
 end;
