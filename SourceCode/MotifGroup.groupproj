@@ -6,6 +6,9 @@
         <Projects Include="Packages\Motif.D103.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Packages\Motif.D110.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="..\Demos\Demo.Basic.dproj">
             <Dependencies/>
         </Projects>
@@ -31,6 +34,15 @@
     </Target>
     <Target Name="Motif_D103:Make">
         <MSBuild Projects="Packages\Motif.D103.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Motif_D110">
+        <MSBuild Projects="Packages\Motif.D110.dproj"/>
+    </Target>
+    <Target Name="Motif_D110:Clean">
+        <MSBuild Projects="Packages\Motif.D110.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Motif_D110:Make">
+        <MSBuild Projects="Packages\Motif.D110.dproj" Targets="Make"/>
     </Target>
     <Target Name="Demo_Basic">
         <MSBuild Projects="..\Demos\Demo.Basic.dproj"/>
@@ -60,13 +72,13 @@
         <MSBuild Projects="..\Benchmarks\Benchmarks.Motif.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="Motif_D103;Demo_Basic;Tests_Motif;Benchmarks_Motif"/>
+        <CallTarget Targets="Motif_D103;Motif_D110;Demo_Basic;Tests_Motif;Benchmarks_Motif"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Motif_D103:Clean;Demo_Basic:Clean;Tests_Motif:Clean;Benchmarks_Motif:Clean"/>
+        <CallTarget Targets="Motif_D103:Clean;Motif_D110:Clean;Demo_Basic:Clean;Tests_Motif:Clean;Benchmarks_Motif:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Motif_D103:Make;Demo_Basic:Make;Tests_Motif:Make;Benchmarks_Motif:Make"/>
+        <CallTarget Targets="Motif_D103:Make;Motif_D110:Make;Demo_Basic:Make;Tests_Motif:Make;Benchmarks_Motif:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
