@@ -92,10 +92,8 @@ end;
 
 function TMotif.createItems(const aTag: string): TMotifItem;
 var
-  item: TMotifItem;
   loc: TLocateItem;
   prepTag: string;
-  arr: TXArray<string>;
   guid: TGUID;
 begin
   prepTag:=cleanTag(aTag);

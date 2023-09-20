@@ -32,7 +32,6 @@ requires
 
 contains
   Motif in '..\Common\Motif.pas',
-  ArrayHelper in '..\ThirdParty\ArrayHelper.pas',
   flcASCII in '..\ThirdParty\flcASCII.pas',
   flcStdTypes in '..\ThirdParty\flcStdTypes.pas',
   flcStringPatternMatcher in '..\ThirdParty\flcStringPatternMatcher.pas',
