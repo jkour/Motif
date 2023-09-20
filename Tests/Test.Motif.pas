@@ -29,23 +29,23 @@ type
     [Test]
     procedure deleteIntermediate;
 
-//    [Test]
-//    [TestCase ('IE', 'country:IE- 0.25- 0.25','-')]
-//    [TestCase ('UK', 'country:UK- 0.20- 0.20','-')]
-//    [TestCase ('DE', 'country:DE- 0.19- 0.19','-')]
-//    [TestCase ('IE-reduced', 'country:IE, type:reduced-0.135-0.135','-')]
-//    [TestCase ('IE-food', 'country:IE, type:food-0.048-0.048','-')]
-//    [TestCase ('UK-food', 'country:UK, type:food-0.0-0.0','-')]
-//    [TestCase ('DE-reduced', 'country:DE, type:reduced-0.07-0.07','-')]
-//    [TestCase ('US', 'country:US-0.0-0.0','-')]
-//    [TestCase ('US-AL', 'country:US, state:AL-0.04-0.04','-')]
-//    [TestCase ('US-AL', 'country:US, state:AL, city:Montgomery-0.10-0.10','-')]
-//    [TestCase ('US-NY', 'country:US, state:NY-0.07-0.07','-')]
-//    procedure countries(const aTag: string; const aRate, aExpected: Double);
-//
-//    [Test]
-//    procedure countiesConvoluted;
-//
+    [Test]
+    [TestCase ('IE', 'country:IE- 0.25- 0.25','-')]
+    [TestCase ('UK', 'country:UK- 0.20- 0.20','-')]
+    [TestCase ('DE', 'country:DE- 0.19- 0.19','-')]
+    [TestCase ('IE-reduced', 'country:IE, type:reduced-0.135-0.135','-')]
+    [TestCase ('IE-food', 'country:IE, type:food-0.048-0.048','-')]
+    [TestCase ('UK-food', 'country:UK, type:food-0.0-0.0','-')]
+    [TestCase ('DE-reduced', 'country:DE, type:reduced-0.07-0.07','-')]
+    [TestCase ('US', 'country:US-0.0-0.0','-')]
+    [TestCase ('US-AL', 'country:US, state:AL-0.04-0.04','-')]
+    [TestCase ('US-AL', 'country:US, state:AL, city:Montgomery-0.10-0.10','-')]
+    [TestCase ('US-NY', 'country:US, state:NY-0.07-0.07','-')]
+    procedure countries(const aTag: string; const aRate, aExpected: Double);
+
+    [Test]
+    procedure countiesConvoluted;
+
     [Test]
     procedure glob;
     [Test]
@@ -255,47 +255,52 @@ begin
   list.Free;
 end;
 
-//procedure TTestMotif.countiesConvoluted;
-//begin
-//  fMotif.add<Double>('country:US, state:NY', function:Double
-//                                             begin
-//                                               result:=0.07;
-//                                             end)
-//        .add<Double>('country:US, state:NY, type:reduced',
-//                      function: double
-//                      var
-//                        list: TList<Double>;
-//                      begin
-//                        list:=fMotif.findClassByPattern<double>('country:US,state:NY');
-//                        result:=list[0];
-//                        list.free;
-//                      end);
-//
-//  Assert.AreEqual(Double(0.07), fMotif.findClassByPattern<Double>('country:US,state:NY,type:reduced')[0]);
-//
-//end;
-//
-//procedure TTestMotif.countries(const aTag: string; const aRate, aExpected:
-//    Double);
-//var
-//  taxFunc: TFunc<Double, Double>;
-//  list: TList<Double>;
-//begin
-//  taxFunc:=function (aRate: Double): Double
-//           begin
-//            // Some sort of calculations here
-//            // but we'll return the same rate
-//            // as example
-//            result:=aRate;
-//           end;
-//  fMotif.add<double>(aTag, function:double
-//                                   begin
-//                                     result:=taxFunc(aRate);
-//                                   end);
-//  list:= fMotif.findClassByPattern<Double>(aTag);
-//  Assert.AreEqual(aExpected, list[0]);
-//  list.Free;
-//end;
+procedure TTestMotif.countiesConvoluted;
+var
+  llist: TList<TMotifItem>;
+begin
+  fMotif.add<Double>('country:US, state:NY', function:Double
+                                             begin
+                                               result:=0.07;
+                                             end)
+        .add<Double>('country:US, state:NY, type:reduced',
+                      function: double
+                      var
+                        list: TList<TMotifItem>;
+                      begin
+                        list:=fMotif.find('country:US, state:NY');
+                        result:=list[0].Value.AsExtended + 1.43;
+                        list.free;
+                      end);
+  llist:=fMotif.find('country:US, state:NY, type:reduced');
+  Assert.AreEqual(Double(1.50), double(llist[0].Value.AsExtended));
+  FreeAndNil(llist);
+end;
+
+procedure TTestMotif.countries(const aTag: string; const aRate, aExpected:
+    Double);
+var
+  taxFunc: TFunc<Double, Double>;
+  resFunc: TFunc<double>;
+  list: TList<TMotifItem>;
+  test: double;
+begin
+  taxFunc:=function (aRate: Double): Double
+           begin
+            // Some sort of calculations here
+            // but we'll return the same rate
+            // as example
+            result:=aRate;
+           end;
+  fMotif.add<double>(aTag, function:double
+                                   begin
+                                     result:=taxFunc(aRate);
+                                   end);
+  list:= fMotif.find(aTag);
+  test:=list[0].Value.AsExtended;
+  Assert.AreEqual(aExpected, test);
+  FreeAndNil(list);
+end;
 
 procedure TTestMotif.setup;
 begin
