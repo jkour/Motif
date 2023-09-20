@@ -26,10 +26,19 @@ uses
 procedure TBenchmarkFindGlob.runBenchmark;
 var
   num: integer;
+  fact: integer;
 begin
   inherited;
-  for num:=0 to 999 do
-    fMotif.findByPattern('x: AZB, y: 500');
+  fact:=random(5) * Factor;
+  for num:=0 to Operations - 1 do
+  begin
+    fMotif.find('x: AZB, y: 500');
+    if num mod fact = 0 then
+    begin
+      Percentage:= num / Operations;
+    end;
+  end;
+  Percentage:=100;
 end;
 
 procedure TBenchmarkFindGlob.setDown;

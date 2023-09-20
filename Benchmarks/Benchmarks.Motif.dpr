@@ -11,35 +11,35 @@ uses
   Core.Benchmark.Base in 'Core\Core.Benchmark.Base.pas',
   Core.BenchmarkManager in 'Core\Core.BenchmarkManager.pas',
   Benchmarks.Add in 'Benchmarks\Benchmarks.Add.pas',
-  Motif in '..\SourceCode\Common\Motif.pas',
-  flcUtils in '..\SourceCode\ThirdParty\flcUtils.pas',
-  flcStrings in '..\SourceCode\ThirdParty\flcStrings.pas',
-  flcStringPatternMatcher in '..\SourceCode\ThirdParty\flcStringPatternMatcher.pas',
-  flcStdTypes in '..\SourceCode\ThirdParty\flcStdTypes.pas',
-  flcASCII in '..\SourceCode\ThirdParty\flcASCII.pas',
-  ArrayHelper in '..\SourceCode\ThirdParty\ArrayHelper.pas',
   Benchmarks.Remove in 'Benchmarks\Benchmarks.Remove.pas',
   Benchmarks.Find in 'Benchmarks\Benchmarks.Find.pas',
-  Benchmarks.Find.Glob in 'Benchmarks\Benchmarks.Find.Glob.pas';
+  Benchmarks.Find.Glob in 'Benchmarks\Benchmarks.Find.Glob.pas',
+  Quick.Console;
 
 procedure loadbenchmarks (const aManager: TBenchmarkManager);
 var
   benchMark: TBaseBenchmark;
+const
+  OPS = 1000000;
+  FACTOR = 1;
+var
+  finalOPS: integer;
 begin
+  finalOps:=round(OPS * FACTOR);
   // Add
-  benchMark:=TBenchmarkAdd.Create('Add', '', 1000000);
+  benchMark:=TBenchmarkAdd.Create('Add', '', finalOps);
   aManager.addBenchmark(benchMark);
 
   // Remove
-  benchMark:=TBenchmarkRemove.Create('Remove', '', 1000000);
+  benchMark:=TBenchmarkRemove.Create('Remove', '', finalOps);
   aManager.addBenchmark(benchMark);
 
   // Find
-  benchMark:=TBenchmarkFind.Create('Find', '', 1000000);
+  benchMark:=TBenchmarkFind.Create('Find', '', finalOps);
   aManager.addBenchmark(benchMark);
 
   // Find Glob
-  benchMark:=TBenchmarkFindGlob.Create('Find Glob', '', 1000000);
+  benchMark:=TBenchmarkFindGlob.Create('Find Glob', '', finalOps);
   aManager.addBenchmark(benchMark);
 end;
 
@@ -47,20 +47,21 @@ var
   benchmarkManager: TBenchmarkManager;
   resString: string;
 begin
+  ReportMemoryLeaksOnShutdown:=true;
   try
     benchmarkManager:=TBenchmarkManager.Create;
-    Writeln('Loading benchmarks...');
+    cout('Loading benchmarks...', ccWhite);
     loadbenchmarks(benchmarkManager);
 
-    Writeln('Benchmarks started...');
+    cout('Benchmarks started...', ccBlue);
 
     benchmarkManager.benchmark;
 
     Writeln;
 
     for resString in benchmarkManager.Results do
-      Writeln(#9+resString);
-    Writeln('Benchmark finished');
+      cout(#9 + resString, ccGreen);
+    cout('Benchmark finished', ccYellow);
 
 //    dir:=TPath.Combine(ExtractFilePath(ParamStr(0)), 'Results');
 //    if not DirectoryExists(dir) then
@@ -69,9 +70,9 @@ begin
 //    benchmarkManager.Results.SaveToFile(TPath.Combine(dir,
 //        'benchmark-'+FormatDateTime('ddmmyyyy-hhmm', Now)+'.txt'));
 //    Writeln('Results saved');
-
-    Write('Press Enter to exit');
-    readln;
+//
+    cout('Press Enter to exit', ccWhite);
+    ConsoleWaitForEnterKey;
 
     benchmarkManager.Free;
 

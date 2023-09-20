@@ -26,8 +26,10 @@ type
     fPercentage: double;
     fOnNotify: TBenchmarkOnNotify;
 
-    procedure postNotification;
     procedure setPercentage(const aValue: double);
+    function getFactor: integer;
+  protected
+    procedure postNotification;
   public
     constructor Create(const aName, aDescription: string; const aOperations:
         Integer);
@@ -40,6 +42,7 @@ type
     property Name: String read fName;
     property Operations: Integer read fOperations;
     property Percentage: double read fPercentage write setPercentage;
+    property Factor: integer read getFactor;
 
     property OnNotify: TBenchmarkOnNotify read fOnNotify write fOnNotify;
   end;
@@ -57,6 +60,26 @@ begin
   fDescription:=Trim(aDescription);
   fOperations:=aOperations;
   fPercentage:=0.00;
+end;
+
+function TBaseBenchmark.getFactor: integer;
+begin
+  if Operations <= 100 then
+    result:=1
+  else
+    if Operations <= 1000 then
+      result:=10
+    else
+      if Operations <= 10000 then
+        result:=100
+      else
+        if Operations <= 100000 then
+          result:=1000
+        else
+          if Operations <= 1000000 then
+            result:=10000
+          else
+            result:=100000;
 end;
 
 procedure TBaseBenchmark.postNotification;

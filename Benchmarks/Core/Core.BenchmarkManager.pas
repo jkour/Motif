@@ -21,7 +21,8 @@ unit Core.BenchmarkManager;
 interface
 
 uses
-  System.Generics.Collections, System.Classes, Core.Benchmark.Base;
+  System.Generics.Collections, System.Classes, Core.Benchmark.Base,
+  Quick.console;
 
 type
  TBenchmarkManager = class
@@ -43,7 +44,7 @@ type
 implementation
 
 uses
-  System.SysUtils, Winapi.Windows, System.Threading;
+  System.SysUtils, Winapi.Windows, System.Threading, Quick.Chrono;
 
 //
 // Memory usage code as suggested in:
@@ -118,10 +119,7 @@ var
   timePerOperation: Double;
   memoryUsed: Int64;
 
-  start: Int64;
-  stop: Int64;
-  freq: Int64;
-
+  chrono: TChronometer;
 begin
   fResults.Clear;
 
@@ -135,38 +133,37 @@ begin
   fResults.Add('Date/Time Stamp: '+FormatDateTime('dd/mm/yyy, hh:mm:ss', Now));
   fResults.Add('');
 
+  chrono:=TChronometer.Create;
   for benchmark in fBenchmarks do
   begin
     benchmark.OnNotify:=OnNotify;
 
     benchmark.setUp;
 
-    queryperformancecounter(start);
-
     memoryUsed:=getUsedMemory;
 
+    chrono.Start;
     benchmark.runBenchmark;
+    chrono.Stop;
 
     memoryUsed:=getUsedMemory - memoryUsed;
 
-    queryperformancecounter(stop);
-    queryperformancefrequency(freq);
-
     benchmark.setDown;
 
-    totalTime:= (stop - start) / freq;
+    totalTime:= chrono.ElapsedSeconds;
     timePerOperation:= totalTime / benchmark.Operations;
 
     fResults.Add(format(
-    '%s [%s]: %.0n operations in %8.6n sec (%8.6n sec/op) using '+
+    '%s [%s]: %.0n operations in %s (%8.6n sec/op) using '+
     ' %s of memory',
                 [benchmark.Name, benchmark.Description,
                  benchmark.Operations + 0.0,
-                 totalTime, timePerOperation,
+                 chrono.ElapsedTime, timePerOperation,
                       bytesToDisplay(memoryUsed)]
                   ));
     fResults.Add('');
   end;
+  FreeAndNil(chrono);
 end;
 
 constructor TBenchmarkManager.Create;
@@ -183,13 +180,16 @@ begin
   inherited;
 end;
 
+
 procedure TBenchmarkManager.OnNotify(const aMessage: string);
 begin
   if aMessage.Contains('%') then
-    Write(#13+aMessage)
+    coutBL(#13+aMessage, ccWhite)
   else
-    Writeln(aMessage);
-
+  begin
+    coutBL('', ccWhite);
+    cout(aMessage, ccWhite);
+  end;
 end;
 
 end.
