@@ -5,13 +5,15 @@ program Demo.Basic;
 {$R *.res}
 
 uses
-  System.SysUtils,
+  System.SysUtils, Generics.Collections,
   Motif;
 
 var
   taxFunc: TFunc<Double, Double>;
   motif: TMotif;
+  list: TList<TMotifItem>;
 begin
+  ReportMemoryLeaksOnShutdown:=true;
   try
     motif:=TMotif.Create;
     taxFunc:=function (aRate: Double): Double
@@ -31,12 +33,15 @@ begin
                                        result:=taxFunc(0.00);
                                      end);
 
+    list:=motif.find('country: UK');
     Writeln('For an item with net value £100.00, the final price is: '+
-              (100 + 100 * motif.findClassByPattern<double>('country: UK')[0]).ToString);
+              (100 + 100 * list[0].Value.AsExtended).ToString);
+    list.Clear;
 
+    list:=motif.find('country: UK, type: food');
     Writeln('For food with net value £100.00, the final price is: '+
-              (100 + 100 * motif.findClassByPattern<double>('country: UK, type: food')[0]).toString);
-
+              (100 + 100 * list[0].Value.AsExtended).ToString);
+    FreeAndNil(list);
     Readln;
 
     motif.Free;
