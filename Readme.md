@@ -3,6 +3,8 @@ Motif is a flexible way to manage patterns that generate unique results in cases
 
 It lets you build simple decision trees without the need to create *if* statements. It makes the minimum number of comparisons necessary to generate a match.
 
+ **The current version is v.2.0.0**: This version has introduced breaking changes
+
 # Simple Example
 Suppose you have the following mapping:
 ```
@@ -49,8 +51,20 @@ var
 ```
 Finally, we retrieve the tax rate by, simply, calling this:
 ```pascal
-motif.find<double>('country: UK'))
-motif.find<double>('country: UK, type: food'))
+var
+  list:TList<TMotifItem>;
+begin
+  ...
+  list:=motif.find('country: UK');
+  writeln(list[0].Value.AsExtended.tostring);
+
+  motif.clear;
+  list:=motif.find('country: UK, type: food'');
+  writeln(list[0].Value.AsExtended.tostring);
+  
+  list.Free <-- Very important; this needs to be descroyed manually (but not to be created)
+end;
+  
 ```
 
 # Glob Matching
@@ -68,7 +82,17 @@ The pattern works the other way around. A request to ```b:*``` will also return 
 
 
 # Customisation
-You can change the way values are stored in Motif. Before Motif adds a value to the internal collection, it fires the ```OnBeforeAdd``` event.
+You can change the way values are stored in Motif. After Motif adds a value to the internal collection, it fires the ```OnAdd``` event.
+
+# Comparison with v.1.x.x
+The ```Benchmark.Motif``` project generates **1,000,000** patterns and performs an addition, deletion, pattern finding ang glob finding
+
+|Test      |  v.1.2.0           |  v.2.0.0         |
+|----------|:------------------:|:----------------:|
+|add       |12sec (254MB)       |5.8sec (458MB)    |
+|remove    |1.21sec (240MB)     |445msec (320MB)   |
+|find      |60sec (68.7MB)      |1.36sec (68.7MB)  |
+|find glob |2min 30sec (68.7MB) |1min 3sec (68.7MB)|
 
 # Inspiration
 This project is inspired by [patrun](<https://www.npmjs.com/package/patrun>)

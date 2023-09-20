@@ -1,6 +1,10 @@
 # Motif
 This document describes the changes in Motif
 
+## [2.0.0] - 2023 - 09 - 21
+### Changed
+- **BREAKING CHANGE**: The component is rewritten from scratch. It now uses QuickLib and indexed lists to locate the patterns. Procedure names have been simplified and they are faster
+
 ## [1.2.0] - 2020 - 01 - 06
 ### Changed
 - find is renamed to findByPattern (breaks backwards compatibility)
