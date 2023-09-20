@@ -4,7 +4,7 @@ interface
 
 uses
   System.Classes, System.Rtti, System.Generics.Collections, Quick.Lists,
-  Quick.Value, Quick.Arrays;
+  Quick.Value, Quick.Arrays, System.SysUtils;
 
 type
   TMotifItem = class;
@@ -43,7 +43,8 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    function add(const aTag: string; const aReturn:string = ''):TMotif;
+    function add(const aTag: string; const aReturn:string = ''):TMotif; overload;
+    function add<T>(const aTag: string; const aFunc: TFunc<T>):TMotif; overload;
     function find(const aTag: string): TList<TMotifItem>;
 
     procedure clear;
@@ -58,7 +59,7 @@ type
 implementation
 
 uses
-  System.Hash, System.SysUtils, flcStringPatternMatcher;
+  System.Hash, flcStringPatternMatcher;
 
 function TMotif.add(const aTag, aReturn: string): TMotif;
 var
@@ -226,6 +227,19 @@ begin
   prepTag:=cleanTag(aTag);
   result:=prepTag.Contains('?') or prepTag.Contains('*') or
             prepTag.Contains('[') or prepTag.Contains(']');
+end;
+
+function TMotif.add<T>(const aTag: string; const aFunc: TFunc<T>): TMotif;
+var
+  item: TMotifItem;
+begin
+  result:=self;
+  // item is created in createItems and here we change the Return value
+  item:=createItems(aTag);
+  item.Value.AsVariant:=TValue.From<T>(aFunc()).AsVariant;
+
+  if strContainsGblob(aTag) then
+    Inc(fWildcardsNum);
 end;
 
 function TMotif.cleanTag(const aTag: string): string;
